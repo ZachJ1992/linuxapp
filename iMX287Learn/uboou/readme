@@ -1,0 +1,27 @@
+对u-boot的初步了解：
+1.关键文件阅读顺序
+  (1)arch/arm/cpu/u-boot.lds
+  链接脚本，可以知道目标程序的各部分链接顺序。指明了入口是_start标号，所以开始会先加载_start的内容。第一个要链接的是CPUDIR/start.o，那么U-Boot的入口指令一定位于这个程序中。
+  (2)arch/arm/cpu/armv7/start.S
+  前部分代码设置中断之类的事情，主要代码：
+    #ifndef CONFIG_SKIP_LOWLEVEL_INIT
+         bl  cpu_init_cp15  #设置CPU寄存器
+         bl  cpu_init_crit  #实际是执行lowlevel_init.S
+    #endif
+
+        bl  _main   #此标号在文件crt0.S中定义
+  (3)board/samsung/origen/lowlevel_init.S
+  主要做一些初始化，具体阅读原代码。
+  (4)arch/arm/lib/crt0.s
+  设置初始的C运行环境，调用函数board_init_f(0)；重定位；设置最终的环境变量，最后会调用函数board_init_r。
+    *为调用 board_init_f() C函数设置初始化环境环境仅仅提供栈以及 GD ('global data') 数据结构的存放空间, 只有已经初始化的静态变量可以在该阶段使用
+    *调用 board_init_f()。为系统从RAM启动准备硬件环境, board_init_f() 必须使用 GD 来存放在最后阶段需要用到的数据。数据包括重定位的目标地址, 未来要使用的栈, 以及未来要使用的 GD 的新地址
+    *为 stack and GD 设置中转环境
+    *调用 relocate_code(). 函数重定位u-boot到 board_init_f() 指定的位置
+    *为调用 board_init_r() 设置最新的环境。初始化BSS，非静态的全局变量和系统RAM中的栈GD保留被 board_init_f() 设置的值。 有些CPU还有一些关于内存的操作没有进行, 因此要调用 call c_runtime_cpu_setup
+    *跳转到 board_init_r(). 
+  (5)arch/arm/lib/board.c
+  该文件中定义了(4)中的两个重要函数board_init_f和board_init_r。其中board_init_r中的mian_loop()函数有待进一步研究。
+  
+
+  

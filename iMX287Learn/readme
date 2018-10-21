@@ -1,0 +1,65 @@
+git搭建：
+（1）sudo apt-get install git git-core
+（2）git config --global user.name "wgco"
+     git config --global user.email "1542997453@qq.com"
+（3）ssh-keygen -t rsa -C "1542997453@qq.com"
+（4）vim ~/.ssh/id_rsa.pub 复制里面的全部内容，添加到github.com
+（5）git init 
+（6）git pull git@github.com:wgco154/EPC-287.git 
+
+    删除提交的文件：git rm --cached 路径及文件
+
+ssh搭建：
+（1）sudo apt-get install openssh-server
+（2）sudo /etc/init.d/ssh start
+
+vim：
+1.配置：
+    修改vim的配置文件/etc/vim/vimrc（注意：在这个文件里面修改注释颜色有时不起作用，可以使用vim ~/.vimrc添加此文件，在里面配置注释颜色）
+    hi comment ctermfg=6 "修改注释颜色
+    set ts=4             "修改Tab的空格数量
+    set expandtab
+    set nu               "设置行号
+    "修改编码
+    set fencs=utf-8,gbk
+    set shitfwidth=4     "设置缩进宽度为4"
+
+2.技巧：
+    向下查找 /mystring
+    向上查找 ?mystring
+    查找替换字符 :%s/old/new/gc
+    多行缩进 首先按v进入可视模式选择多行，shift + > 增加缩进，shitf + < 减小缩进
+    多行注释 (1)ctrl+v (2)上下方向选行列 (3)大写I (4)写注释符// (5)按ESC两次 (6)自动完成
+    取消注释 (1)ctrl+v (2)上下方向选行列 (3)按d   (4)完成
+
+常用查找：   
+    查找文件 find ./ -name "name.txt"
+    递归删除指定类型的文件 find  .  -name  '*.o'  -type f -print  -exec  rm  -rf  {} \;
+    查找目录下所有文件中的特定字符串：grep 'XXX' ./ -Rn
+ 
+
+Linux应用程序技术验证：
+1.文件夹名：process
+	fcprocess.c:创建一个父进程，由父进程创建一个子进程
+	loadprogram.c:子进程通过execle将可执行文件loadprogram装载到该进程
+2.文件夹名：thread
+	main.c:实现基本功能如例程process，在此功能基础上添加线程测试
+	loadprogram.c:实现功能如process，在此功能基础上添加线程测试 
+3.文件夹名：sharememry
+	在例程2的基础上，将子进程的加载源文件分到单独的文件夹loadsrc
+	文件夹sharesrc存放公共文件
+	创建共享内存，并测试其功能特性。父进程每秒钟读取1940到现在的计数值，并写入到共享内存，子进程装载新的代码，实现从共享内存读出计数值并打印到终端。
+	理论上两个进程正常/异常退出，都应该按合理顺序把共享内存释放掉，否则共享内存将不会被释放。实现机制有待研究。
+	共享内存的一种实用方法：把共享内存划分成不同的功能块，定义偏移地址方便实现对不同功能块的内存读写。
+4.文件夹名：fifo（命名管道）
+	在例程3的基础上创建命名管道的，研究命名管道的性质，实现两个进程使用命名管道数据通讯
+5.文件夹名：msgqueue
+	实现在同一进程间不同线程间使用消息队列通信
+7.文件夹名：mqtt
+    使用mqttsdk中的例程，并移植sdk到EPC-287工控板，初步实现和Onenet服务器的连接。在工控板首先要ping通Onenet平台，设置参考https://blog.csdn.net/qingtingchen1987/article/details/7045068
+8.文件夹命：net
+    cs0：验证客户端/服务器端socket编程
+
+git commit -am "更新源文件"
+git push git@github.com:wgco154/EPC-287.git master
+
