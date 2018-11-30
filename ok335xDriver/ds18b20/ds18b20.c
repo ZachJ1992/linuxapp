@@ -109,7 +109,7 @@ static unsigned int ds18b20_read(void)
 			data |= 0x80;
 		udelay(60);
 	}
-	return 0;
+	return data;
 }
 
 static ssize_t read_ds18b20(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
@@ -127,8 +127,19 @@ static ssize_t read_ds18b20(struct file *filp, char __user *buf, size_t count, l
 	ds18b20_write(0xcc);
 	ds18b20_write(0x44);
 
+	flag = ds18b20_reset();
+	if(flag <= 0){
+		printk("ds18b20 init fail!\n");
+		return -1;
+	}
+
+	ds18b20_write(0xcc);
+	ds18b20_write(0xbe);
+
 	Data[0] = ds18b20_read();
 	Data[1] = ds18b20_read();
+	
+	printk("Data[0]=%x,Data[1]=%x\n",Data[0],Data[1]);
 
 	ds18b20_reset();
 	err = copy_to_user(buf, Data, sizeof(Data));
@@ -141,7 +152,7 @@ static int open_ds18b20(struct inode *inode, struct file *filp)
 	int flag = 0;
 	
 	flag = ds18b20_reset();
-	if(flag < 0){
+	if(flag){
 		printk("open ds18b20 successful!\n");	
 	}else{
 		printk("open ds18b20 failed!\n");
@@ -193,7 +204,7 @@ static int __init ds18b20_init(void)
 	device_create(dev.sy_class, NULL, MKDEV(ds18b20_major, ds18b20_minor), NULL, DEV_NAME);
 	printk(KERN_NOTICE"Ds18b20 is ok!\n");
 
-	ret = gpio_request(W1GPIO,"gpio1_27");
+	ret = gpio_request(W1GPIO,"gpio1_18");
 	if (ret < 0)
 		pr_warning("w1-gpio Unable to request GPIO_W1_PULLUP_ENABLE\n");
  
