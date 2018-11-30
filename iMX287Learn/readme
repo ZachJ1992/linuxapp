@@ -61,5 +61,5 @@ Linux应用程序技术验证：
     cs0：验证客户端/服务器端socket编程
 
 git commit -am "更新源文件"
-git push git@github.com:wgco154/EPC-287.git master
+git push git@github.com:wgco154/EPC-287.git master (强制将本地仓库提交要使用+master，即在master前加+号)
 
