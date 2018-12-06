@@ -5,13 +5,17 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdint.h>
+
+//温度符号位
+#define S 0xF800
 
 int main(int argc,char **argv)
 {
 	int fd;
 	int i = 0;
-	int data = 0;
 	unsigned char result[2];
+	uint16_t data = 0;
 	float temperature = 0;
 
 	printf("will open fd..\n");
@@ -35,11 +39,21 @@ int main(int argc,char **argv)
 			printf("read success! %x,%x\n",result[0],result[1]);
 		}
 
-		data = (int)result[1]; 
+		data = result[1]; 
         	data <<=8;
         	data = data | result[0];
-        	temperature =data * 0.0625 ;
-        	printf("Temperature = %.2f ℃ \n",temperature);
+
+		if((data&S) == 0){
+        		temperature =data * 0.0625 ;
+        		printf("Temperature = %.2f ℃ \n",temperature);
+		}else if((data&S) == S){
+			data = ~data; //按位取反
+			data += 1;    //再加1
+        		temperature =data * 0.0625 ;
+        		printf("Temperature = -%.2f ℃ \n",temperature);
+		}else{
+			printf("error: 'sign' bit \n");
+		}
         	fflush(stdout);
         	sleep(1);
 	}
