@@ -1,0 +1,3 @@
+ESP8266_RTOS_SDK相关资料链接：
+主题：esp8266~入坑sdk 3.0 IDF框架和linux交叉编译环境搭建
+链接：https://blog.csdn.net/Bluechalk/article/details/82714907
