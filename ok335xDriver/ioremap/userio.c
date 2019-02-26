@@ -34,10 +34,16 @@ static struct userio_device   dev;//若使用指针，记得给指针开辟空�
 
 ///IO映射相关
 #define GPIO1		0x4804C000
+#define GPIO2		0x481AC000
+#define GPIO3		0x481AE000
 
 #define OE		0x134
 #define DATAOUT		0x13C
 #define SETDATAOUT	0x194
+
+#define PIN(v)		(0x0000FFFF<<v)
+
+#define TEST_NO		16
 
 static volatile unsigned long *_gpio1_reg,*oe,*dataout,*setdataout;
 
@@ -71,11 +77,11 @@ static ssize_t userio_read(struct file *filp, char __user *buf, size_t count, lo
 static ssize_t userio_write(struct file *file,const char __user *ubuf,size_t count, loff_t *ppos)
 {
 	if(ubuf[0]){
-		*dataout |= 0x04000000;
+		*dataout |= PIN(TEST_NO);//0x04000000;
 		//*(_gpio1_reg+DATAOUT) |= 0x04000000;//Data to set on output pins.
 		printk("%s set gpio 1 \n",DEV_NAME);
 	}else{
-		*dataout &= ~0x04000000;
+		*dataout &= ~PIN(TEST_NO);//~0x04000000;
 		//*(_gpio1_reg+DATAOUT) &= ~0x04000000;//Data to set on output pins.
 		printk("%s set gpio 0 \n",DEV_NAME);
 	}
@@ -132,13 +138,13 @@ static int __init userio_init(void)
 	//	pr_warning("w1-gpio Unable to request GPIO_W1_PULLUP_ENABLE\n");
 
 
-	oe = ioremap(0x4804C000 + 0x134, 4);
-	setdataout = ioremap(0x4804C000 + 0x194, 4);
-	dataout = ioremap(0x4804C000 + 0x13C, 4);
+	oe = ioremap(GPIO1 + 0x134, 4);
+	setdataout = ioremap(GPIO1 + 0x194, 4);
+	dataout = ioremap(GPIO1 + 0x13C, 4);
 
-	*oe &= 0xFBFFFFFF;//set output
-	*setdataout |= 0x04000000;
-	*dataout |= 0x04000000;
+	*oe &= ~PIN(TEST_NO);//0xFBFFFFFF;//set output
+	*setdataout |= PIN(TEST_NO);//0x04000000;
+	*dataout &= ~PIN(TEST_NO);//0x04000000;
 
 	//_gpio1_reg = (volatile unsigned long *)ioremap(GPIO1,4*1024);//gpiox寄存器大小4KB
 

@@ -38,7 +38,7 @@ int main(int argc,char *argv[])
 		}else{
 			val = 1;
 		}
-		sleep(2);
+		sleep(1);
 	}	
 	
 	return 0;

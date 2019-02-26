@@ -4,7 +4,7 @@
 #               # Makefile2.6
 ifneq ($(KERNELRELEASE),)
 	#kbuild syntax. dependency relationshsip of files and target modules are listed here.
-obj-m := userio_.o
+obj-m := userio.o
 #cardet_isr-objs := ds18b20.o
 else
 	PWD := $(shell pwd)
